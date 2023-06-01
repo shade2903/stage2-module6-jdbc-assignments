@@ -23,15 +23,16 @@ public class SimpleJDBCRepository {
 
     private static final String CREATE_USER_SQL = "INSERT INTO myusers(firstname, lastname, age) VALUES (?,?,?)";
     private static final String UPDATE_USER_SQL = "UPDATE myusers SET firstname = ?, lastname = ?, age = ? WHERE id = ?";
-    private static final String DELETE_USER = "DELETE FROM myusers WHERE id = ? ";
+    private static final String DELETE_USER = "DELETE FROM myusers WHERE id = ?";
     private static final String FIND_USER_BY_ID_SQL = "SELECT * FROM myusers WHERE id = ?";
     private static final String FIND_USER_BY_NAME_SQL = "SELECT * FROM myusers WHERE firstname = ?";
     private static final String FIND_ALL_USER_SQL = "SELECT * FROM myusers";
 
     public Long createUser(User user) {
         Long id = null;
-        try (var connection = dataSource.getConnection();
-             var ps = connection.prepareStatement(CREATE_USER_SQL, Statement.RETURN_GENERATED_KEYS)) {
+        try {
+            connection = dataSource.getConnection();
+            ps = connection.prepareStatement(CREATE_USER_SQL, Statement.RETURN_GENERATED_KEYS);
             ps.setObject(1, user.getFirstName());
             ps.setObject(2, user.getLastName());
             ps.setObject(3, user.getAge());
@@ -49,9 +50,9 @@ public class SimpleJDBCRepository {
 
     public User findUserById(Long userId) {
         User user = null;
-        try (var connection = dataSource.getConnection();
-             var ps = connection.prepareStatement(FIND_USER_BY_ID_SQL)) {
-
+        try {
+            connection = dataSource.getConnection();
+            ps = connection.prepareStatement(FIND_USER_BY_ID_SQL);
             ps.setLong(1, userId);
             ResultSet resultSet = ps.executeQuery();
             if (resultSet.next()) {
@@ -65,9 +66,9 @@ public class SimpleJDBCRepository {
 
     public User findUserByName(String userName) {
         User user = null;
-        try (var connection = dataSource.getConnection();
-             var ps = connection.prepareStatement(FIND_USER_BY_NAME_SQL)) {
-
+        try {
+            connection = dataSource.getConnection();
+            ps = connection.prepareStatement(FIND_USER_BY_NAME_SQL);
             ps.setString(1, userName);
             ResultSet resultSet = ps.executeQuery();
             if (resultSet.next()) {
@@ -82,10 +83,9 @@ public class SimpleJDBCRepository {
 
     public List<User> findAllUser() {
         List<User> users = new ArrayList<>();
-        try (var connection = dataSource.getConnection();
-             var ps = connection.prepareStatement(FIND_ALL_USER_SQL)) {
-
-
+        try {
+            connection = dataSource.getConnection();
+            ps = connection.prepareStatement(FIND_ALL_USER_SQL);
             ResultSet resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 users.add(build(resultSet));
@@ -98,8 +98,9 @@ public class SimpleJDBCRepository {
 
 
     public User updateUser(User user) {
-        try (var connection = dataSource.getConnection();
-             var ps = connection.prepareStatement(UPDATE_USER_SQL)) {
+        try {
+            connection = dataSource.getConnection();
+            ps = connection.prepareStatement(UPDATE_USER_SQL);
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
             ps.setInt(3, user.getAge());
@@ -115,8 +116,9 @@ public class SimpleJDBCRepository {
 
 
     private void deleteUser(Long userId) {
-        try (var connection = dataSource.getConnection();
-             var ps = connection.prepareStatement(DELETE_USER)) {
+        try {
+            connection = dataSource.getConnection();
+            ps = connection.prepareStatement(DELETE_USER);
             ps.setLong(1, userId);
             ps.executeUpdate();
         } catch (SQLException e) {
